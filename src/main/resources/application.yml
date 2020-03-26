@@ -1,0 +1,24 @@
+spring:
+  devtools:
+    restart:
+      enabled: false
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/test?useUnicode=true&serverTimezone=UTC&allowPublicKeyRetrieval=true&verifyServerCertificate=false&useSSL=false
+    hikari: # springboot 2.0 \u6574\u5408\u4E86hikari ,\u636E\u8BF4\u8FD9\u662F\u76EE\u524D\u6027\u80FD\u6700\u597D\u7684java\u6570\u636E\u5E93\u8FDE\u63A5\u6C60
+      username: root
+      password: root
+  jpa:
+    hibernate:
+      ddl-auto: update  # \u7B2C\u4E00\u6B21\u5EFA\u8868create  \u540E\u9762\u7528update\uFF0C\u8981\u4E0D\u7136\u6BCF\u6B21\u91CD\u542F\u90FD\u4F1A\u65B0\u5EFA\u8868
+    show-sql: true
+  thymeleaf:
+    cache: false
+    suffix: .html
+    prefix: classpath:/templates/
+    mode: HTML5
+    encoding: utf-8
+    servlet:
+      content-type: text/html
+server:
+  port: 8888
