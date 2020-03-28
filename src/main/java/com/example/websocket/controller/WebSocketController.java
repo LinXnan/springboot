@@ -1,5 +1,8 @@
 package com.example.websocket.controller;
 
+import com.example.websocket.configation.MyPrincipalHandshakeHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +21,7 @@ import javax.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/websocket")
 public class WebSocketController {
-
+    private static final Logger log = LoggerFactory.getLogger(WebSocketController.class);
     // 跳转stomp websocket 页面
     @GetMapping("/spring/stompSocket")
     public String toStompWebSocket(HttpSession session, HttpServletRequest request, Model model)
@@ -26,7 +29,7 @@ public class WebSocketController {
         // 这里封装一个登录的用户组参数，模拟进入通讯后的简单初始化
         model.addAttribute("groupId","user_groupId");
         model.addAttribute("session_id",session.getId());
-        System.out.println("跳转：" + session.getId());
+        log.info("跳转：{}" , session.getId());
         session.setAttribute("loginName",session.getId());
         return "/websocket/simple/ws-broadcast";
 

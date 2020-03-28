@@ -25,8 +25,9 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
         if(session == null ){
             logger.error("websocket权限拒绝");
             return false;
+        }else {
+            attributes.put("HTTP_SESSION", session);
         }
-        attributes.put("HTTP_SESSION",session);
         return true;
     }
 

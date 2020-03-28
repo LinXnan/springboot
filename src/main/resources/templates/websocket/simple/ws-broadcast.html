@@ -28,7 +28,7 @@
          * 1. 连接url为endpointChat的endpoint,对应后台WebSoccketConfig的配置
          * 2. SockJS 所处理的URL 是 "http://" 或 "https://" 模式，而不是 "ws://" or  "wss://"
          */
-        socket = new SockJS([[${#servletContext.contextPath}]]+"/stomp/websocketJS");
+        socket = new SockJS("/stomp/websocketJS");
 
         // 通过sock对象监听每个事件节点，非必须,这个必须放在stompClient的方法前面
         sockHandle();
@@ -69,7 +69,7 @@
             stompClient.subscribe("/topicTest/hello",function (message) {
                 var msg = JSON.parse(message.body).msg;
                 console.log("接收到公告信息：" + msg);
-                alert("接收到公告信息：" + msg);
+                showResponse("接收到公告信息：" + msg);
             });
 
             /*
@@ -80,7 +80,7 @@
             stompClient.subscribe('/user/userTest/own',function (message) {
                 var msg = JSON.parse(message.body).msg;
                 console.log("接收到私信信息SendToUser：" + msg);
-                alert("接收到私信信息SendToUser：" + msg);
+                showResponse("接收到私信信息SendToUser：" + msg);
             });
 
             /*
@@ -93,9 +93,9 @@
              */
             stompClient.subscribe('/user/userTest/callBack',function (message) {
 
-                var msg  = message.body;
+                var msg  = JSON.parse(message.body).msg;
                 console.log("接收到点对点SendToUser：" + msg);
-                alert("接收到点对点SendToUser：" + msg);
+                showResponse("接收到点对点SendToUser：" + msg);
             });
 
         }, function (error) {
@@ -116,7 +116,7 @@
          *     可选参数,可以携带消息头信息，也可以做事务，如果没有，传{}
          *  3. body 为发送信息的 body，字符串，可选参数
          */
-        stompClient.send('${"/app/sendChatMsg/" + groupId}',{},JSON.stringify(data));
+        stompClient.send("/app/sendChatMsg/groupId",{},JSON.stringify(data));
     }
 
     // 发送给自己
@@ -181,19 +181,31 @@
             socket = null;
         }
     }
+    // 处理响应数据
+    function showResponse(message) {
+        var response = $("#response");
+        response.html(  response.html() +message+ "<br>");
+    }
+    function clearPrint(message) {
+        var response = $("#response");
+        response.html("");
+    }
 
 </script>
 </head>
 <body>
 <div>
+    <div>我的sessionid：[[${session_id}]]</div>
     <span>消息</span>
     <input type="text" id="message" name="message">
     <input type="button" id="sendMsg" name="sendMsg" value="发送公告" onclick="sendMsg();">
     <input type="button" id="sendMsgOwn" name="sendMsgOwn" value="自己给自己推送" onclick="sendMsgOwn();">
+    <input type="button" value="清空输出板" onclick="clearPrint();">
     <br/>
     <span>接收人</span>
     <input type="text" id="accountId" name="accountId">
     <input type="button" id="sendMsgById" name="sendMsgById" value="点对点消息" onclick="sendMsgById();">
+    <p id="response"></p>
 </div>
 </body>
 </html>

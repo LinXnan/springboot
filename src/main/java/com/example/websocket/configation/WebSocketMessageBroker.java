@@ -57,7 +57,7 @@ public class WebSocketMessageBroker implements WebSocketMessageBrokerConfigurer 
         // 自定义调度器，用于控制心跳线程
         ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
         // 线程池线程数，心跳连接开线程
-        taskScheduler.setPoolSize(5);
+        taskScheduler.setPoolSize(1);
         // 线程名前缀
         taskScheduler.setThreadNamePrefix("websocket-heartbeat-thread-");
         // 初始化
@@ -146,7 +146,7 @@ public class WebSocketMessageBroker implements WebSocketMessageBrokerConfigurer 
         registration.taskExecutor().corePoolSize(10)
                 .maxPoolSize(20)
                 .keepAliveSeconds(60);
-        registration.interceptors(new WebSocketChannelInterceptor());
+        registration.interceptors(webSocketChannelInterceptor());
     }
 
     /**

@@ -30,8 +30,12 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
          * 1. 判断是否为首次连接请求，如果已经连接过，直接返回message
          * 2. 网上有种写法是在这里封装认证用户的信息，本文是在http阶段，websockt 之前就做了认证的封装，所以这里直接取的信息
          */
-        if(StompCommand.CONNECT.equals(accessor.getCommand()))
-        {
+        // 忽略心跳检测非stomp消息
+        if(accessor == null){
+            return message;
+        }
+
+        if (StompCommand.CONNECT.equals(accessor.getCommand())) {
             /*
              * 1. 这里获取就是JS stompClient.connect(headers, function (frame){.......}) 中header的信息
              * 2. JS中header可以封装多个参数，格式是{key1:value1,key2:value2}
@@ -48,10 +52,9 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
              */
             WebSocketUserAuthentication user = (WebSocketUserAuthentication) accessor.getUser();
 
-            System.out.println("认证用户:" + user.toString() + " 页面传递令牌" + token);
+            log.info("认证用户:" + user.toString() + " 页面传递令牌" + token);
 
-        }else if (StompCommand.DISCONNECT.equals(accessor.getCommand()))
-        {
+        } else if (StompCommand.DISCONNECT.equals(accessor.getCommand())) {
 
         }
         return message;
@@ -60,8 +63,14 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
     // 在消息发送后立刻调用，boolean值参数表示该调用的返回值
     @Override
     public void postSend(Message<?> message, MessageChannel messageChannel, boolean b) {
-
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+
+        // 忽略心跳消息等非STOMP消息
+        if(accessor.getCommand() == null)
+        {
+            log.info("心跳");
+            return;
+        }
 
         /*
          * 拿到消息头对象后，我们可以做一系列业务操作
@@ -74,14 +83,7 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
         // 这里只是单纯的打印，可以根据项目的实际情况做业务处理
         log.info("postSend 中获取httpSession key：" + httpSession.getId());
 
-        // 忽略心跳消息等非STOMP消息
-        if(accessor.getCommand() == null)
-        {
-            return;
-        }
-
         // 根据连接状态做处理，这里也只是打印了下，可以根据实际场景，对上线，下线，首次成功连接做处理
-        System.out.println(accessor.getCommand());
         switch (accessor.getCommand())
         {
             // 首次连接

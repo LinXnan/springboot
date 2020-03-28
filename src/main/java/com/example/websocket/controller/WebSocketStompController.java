@@ -61,7 +61,7 @@ public class WebSocketStompController {
         log.info("公告拿到客户端传递分组参数:" + groupId);
 
         // 这里拿到的json 字符串，其实可以自动绑定到对象上
-        System.out.println("公告获取客户端传递过来的JSON 字符串：" + json);
+        log.info("公告获取客户端传递过来的JSON 字符串：" + json);
         Map msg = (Map) JSON.parse(json);
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("msg", "公告服务器收到客户端请求，发送广播消息:"+ msg.get("msg"));
@@ -91,7 +91,7 @@ public class WebSocketStompController {
                 + " socketId:" + headerAccessor.getSessionId());
 
         // 这里拿到的json 字符串，其实可以自动绑定到对象上
-        System.out.println("SendToUser获取客户端传递过来的JSON 字符串：" + json);
+        log.info("SendToUser获取客户端传递过来的JSON 字符串：" + json);
 
         Map msg = (Map)JSON.parse(json);
         Map<String, Object> data = new HashMap<String, Object>();
@@ -129,8 +129,8 @@ public class WebSocketStompController {
         // 向用户发送消息,第一个参数是接收人、第二个参数是浏览器订阅的地址，第三个是消息本身
         // 如果服务端要将消息发送给特定的某一个用户，
         // 可以使用SimpleMessageTemplate的convertAndSendToUser方法(第一个参数是用户的登陆名username)
-        String address = "/userTest/callBack";
-        messagingTemplate.convertAndSendToUser(accountId, address, msg.get("msg"));
+        String address = "/userTest/own";
+        messagingTemplate.convertAndSendToUser(accountId, address, json);
 
         data.put("msg", "callBack 消息已推送，消息内容：" + msg.get("msg"));
         return data;
